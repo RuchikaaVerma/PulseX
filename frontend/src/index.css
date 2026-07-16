@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-canvas text-ink font-body antialiased;
+  background-image:
+    radial-gradient(circle at 10% 0%, rgba(45,108,223,0.05), transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(124,92,255,0.05), transparent 35%);
+  background-attachment: fixed;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D7DEEA; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #C1CBDD; }
+
+.panel {
+  @apply bg-panel border border-line rounded-2xl shadow-panel;
+}
+
+.mono-num {
+  @apply font-mono tabular-nums;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.status-dot.normal { background: #16B981; }
+.status-dot.warning { background: #F5A524; }
+.status-dot.critical { background: #EF4444; }
+
+.live-dot {
+  position: relative;
+}
+.live-dot::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 2px solid #16B981;
+  animation: pulseRing 2.2s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+
+.shimmer-track {
+  background: linear-gradient(90deg, #EEF1F8 25%, #F7F9FD 50%, #EEF1F8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+
+/* focus visibility for keyboard nav */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid #2D6CDF;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
