@@ -33,6 +33,8 @@ light, glass-panel command-center UI.
 | Drifting background glow / hover-lift panels / pulsing critical indicators | `App.tsx` background blobs, `index.css` `.panel:hover` and `.status-dot.critical` |
 
 ---
+<img width="959" height="437" alt="image" src="https://github.com/user-attachments/assets/f257e892-4cb8-4431-8ecd-5945e8361e0f" />
+<img width="818" height="420" alt="image" src="https://github.com/user-attachments/assets/bf3a3f0b-a22c-4679-b6bc-6f9f96927a82" />
 
 ## 🎨 Design direction
 
