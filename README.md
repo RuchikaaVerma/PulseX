@@ -29,6 +29,8 @@ light, glass-panel command-center UI.
 | CSV export | "Export CSV" button in `TopBar.tsx` |
 | Light theme with a dark toggle | `App.tsx` (design tokens in `tailwind.config.js`) |
 | Animated KPI cards, count-up numbers, staggered page load | `components/KpiCards.tsx`, `framer-motion` throughout |
+| Ambient sonification — a generative soundscape whose brightness/tempo tracks live fleet CPU | `hooks/useAmbientSound.ts` (Tone.js), toggle in `TopBar.tsx` |
+| Drifting background glow / hover-lift panels / pulsing critical indicators | `App.tsx` background blobs, `index.css` `.panel:hover` and `.status-dot.critical` |
 
 ---
 

@@ -8,9 +8,11 @@ interface Props {
   theme: "light" | "dark";
   onToggleTheme: () => void;
   onExport: () => void;
+  ambientOn: boolean;
+  onToggleAmbient: () => void;
 }
 
-export default function TopBar({ connected, kpis, theme, onToggleTheme, onExport }: Props) {
+export default function TopBar({ connected, kpis, theme, onToggleTheme, onExport, ambientOn, onToggleAmbient }: Props) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -21,9 +23,13 @@ export default function TopBar({ connected, kpis, theme, onToggleTheme, onExport
   return (
     <header className="flex items-center justify-between gap-4 px-6 py-4 border-b border-line bg-panel/80 backdrop-blur sticky top-0 z-30">
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-signal-info to-signal-ai flex items-center justify-center shadow-glow">
+        <motion.div
+          className="w-9 h-9 rounded-xl bg-gradient-to-br from-signal-info to-signal-ai flex items-center justify-center shadow-glow"
+          animate={{ boxShadow: ["0 0 0 0 rgba(45,108,223,0.35)", "0 0 0 8px rgba(45,108,223,0)"] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut" }}
+        >
           <span className="text-white font-display font-bold text-sm">Px</span>
-        </div>
+        </motion.div>
         <div>
           <div className="font-display font-semibold text-lg leading-none tracking-tight">PulseX</div>
           <div className="text-[11px] text-ink-faint leading-none mt-0.5">Real-Time Intelligence Dashboard</div>
@@ -58,6 +64,26 @@ export default function TopBar({ connected, kpis, theme, onToggleTheme, onExport
         >
           Export CSV
         </button>
+
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={onToggleAmbient}
+          title="Ambient sonification — a generative soundscape tied to live fleet load"
+          className={`w-9 h-9 rounded-lg border flex items-center justify-center transition-colors ${
+            ambientOn
+              ? "border-signal-ai/40 bg-signal-ai/10 text-signal-ai"
+              : "border-line hover:bg-canvas text-ink-faint"
+          }`}
+          aria-label="Toggle ambient sound"
+          aria-pressed={ambientOn}
+        >
+          <motion.span
+            animate={ambientOn ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+            transition={ambientOn ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" } : {}}
+          >
+            {ambientOn ? "🔊" : "🔈"}
+          </motion.span>
+        </motion.button>
 
         <motion.button
           whileTap={{ scale: 0.9 }}

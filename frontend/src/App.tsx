@@ -12,6 +12,7 @@ import AlertsPanel from "./components/AlertsPanel";
 import AIChat from "./components/AIChat";
 import PerformanceMonitor from "./components/PerformanceMonitor";
 import { usePulseStream } from "./hooks/usePulseStream";
+import { useAmbientSound } from "./hooks/useAmbientSound";
 import type { Snapshot } from "./types";
 
 function downloadCsv(devices: Snapshot["top_devices"]) {
@@ -34,8 +35,10 @@ export default function App() {
   const [active, setActive] = useState("overview");
   const [scrubSnapshot, setScrubSnapshot] = useState<Snapshot | null>(null);
   const [isLive, setIsLive] = useState(true);
+  const [ambientOn, setAmbientOn] = useState(false);
 
   const snapshot = isLive ? liveSnapshot : scrubSnapshot;
+  useAmbientSound(ambientOn, snapshot?.kpis.avg_cpu ?? 40);
 
   const sections = useMemo(
     () => ["overview", "twin", "devices", "forecast", "alerts"],
@@ -49,13 +52,35 @@ export default function App() {
 
   return (
     <div className={theme === "dark" ? "dark-shell" : ""} style={theme === "dark" ? { filter: "invert(1) hue-rotate(180deg)" } : undefined}>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col relative isolate overflow-hidden">
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <motion.div
+            className="absolute w-[520px] h-[520px] rounded-full blur-3xl"
+            style={{ background: "radial-gradient(circle, rgba(45,108,223,0.10), transparent 70%)", top: "-10%", left: "-8%" }}
+            animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute w-[460px] h-[460px] rounded-full blur-3xl"
+            style={{ background: "radial-gradient(circle, rgba(124,92,255,0.10), transparent 70%)", top: "20%", right: "-6%" }}
+            animate={{ x: [0, -30, 0], y: [0, 40, 0] }}
+            transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute w-[400px] h-[400px] rounded-full blur-3xl"
+            style={{ background: "radial-gradient(circle, rgba(22,185,129,0.08), transparent 70%)", bottom: "-10%", left: "30%" }}
+            animate={{ x: [0, 25, 0], y: [0, -20, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
         <TopBar
           connected={connected}
           kpis={snapshot?.kpis}
           theme={theme}
           onToggleTheme={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
           onExport={() => snapshot && downloadCsv(snapshot.top_devices)}
+          ambientOn={ambientOn}
+          onToggleAmbient={() => setAmbientOn((v) => !v)}
         />
 
         <div className="flex flex-1">

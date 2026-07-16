@@ -21,6 +21,12 @@ body {
 
 .panel {
   @apply bg-panel border border-line rounded-2xl shadow-panel;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.panel:hover {
+  box-shadow: 0 2px 4px rgba(15,23,41,0.05), 0 16px 32px -14px rgba(15,23,41,0.16);
+  transform: translateY(-2px);
 }
 
 .mono-num {
@@ -36,7 +42,15 @@ body {
 
 .status-dot.normal { background: #16B981; }
 .status-dot.warning { background: #F5A524; }
-.status-dot.critical { background: #EF4444; }
+.status-dot.critical { background: #EF4444; position: relative; }
+.status-dot.critical::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  border: 2px solid #EF4444;
+  animation: pulseRing 1.6s cubic-bezier(0.4,0,0.2,1) infinite;
+}
 
 .live-dot {
   position: relative;

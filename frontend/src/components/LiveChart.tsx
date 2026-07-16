@@ -43,7 +43,7 @@ export default function LiveChart({ series, apiBase }: Props) {
       </div>
       <div className="flex-1 min-h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={merged} margin={{ top: 4, right: 8, left: -18, bottom: 0 }}>
+          <ComposedChart data={merged} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="cpuFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#2D6CDF" stopOpacity={0.25} />
@@ -52,14 +52,28 @@ export default function LiveChart({ series, apiBase }: Props) {
             </defs>
             <CartesianGrid stroke="#EEF1F8" vertical={false} />
             <XAxis dataKey="t" hide />
-            <YAxis width={30} tick={{ fontSize: 10, fill: "#8891A5" }} domain={[0, 100]} />
+            <YAxis
+              yAxisId="cpu"
+              width={36}
+              tick={{ fontSize: 10, fill: "#2D6CDF" }}
+              domain={[0, 100]}
+              tickFormatter={(v) => `${v}%`}
+            />
+            <YAxis
+              yAxisId="latency"
+              orientation="right"
+              width={44}
+              tick={{ fontSize: 10, fill: "#7C5CFF" }}
+              domain={[0, "dataMax + 20"]}
+              tickFormatter={(v) => `${v}ms`}
+            />
             <Tooltip
               contentStyle={{ borderRadius: 12, border: "1px solid #E6EAF2", fontSize: 12 }}
               labelFormatter={() => ""}
             />
-            <Area type="monotone" dataKey="cpu" stroke="#2D6CDF" fill="url(#cpuFill)" strokeWidth={2} isAnimationActive={false} />
-            <Line type="monotone" dataKey="latency" stroke="#7C5CFF" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-            <Line type="monotone" dataKey="forecast" stroke="#2D6CDF" strokeDasharray="4 4" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Area yAxisId="cpu" type="monotone" dataKey="cpu" stroke="#2D6CDF" fill="url(#cpuFill)" strokeWidth={2} isAnimationActive={false} />
+            <Line yAxisId="latency" type="monotone" dataKey="latency" stroke="#7C5CFF" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+            <Line yAxisId="cpu" type="monotone" dataKey="forecast" stroke="#2D6CDF" strokeDasharray="4 4" strokeWidth={2} dot={false} isAnimationActive={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>

@@ -62,18 +62,38 @@ export default function KpiCards({ kpis }: { kpis?: Kpis }) {
     );
   }
 
+  const container = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.06 } },
+  };
+  const item = {
+    hidden: { opacity: 0, y: 10, scale: 0.97 },
+    show: { opacity: 1, y: 0, scale: 1 },
+  };
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-      <Card label="Devices Online" value={kpis.devices_online} accent="#0F1729" />
-      <Card label="Factories" value={kpis.factories} accent="#0F1729" />
-      <Card label="Avg CPU" value={kpis.avg_cpu} suffix="%" decimals={1} accent="#2D6CDF" />
-      <Card label="Avg Latency" value={kpis.avg_latency} suffix="ms" decimals={1} accent="#7C5CFF" />
-      <Card label="Requests / sec" value={kpis.req_per_sec} accent="#16B981" />
-      <Card
-        label="Critical Alerts"
-        value={kpis.critical_devices}
-        accent={kpis.critical_devices > 0 ? "#EF4444" : "#16B981"}
-      />
-    </div>
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"
+    >
+      {[
+        { label: "Devices Online", value: kpis.devices_online, accent: "#0F1729" },
+        { label: "Factories", value: kpis.factories, accent: "#0F1729" },
+        { label: "Avg CPU", value: kpis.avg_cpu, suffix: "%", decimals: 1, accent: "#2D6CDF" },
+        { label: "Avg Latency", value: kpis.avg_latency, suffix: "ms", decimals: 1, accent: "#7C5CFF" },
+        { label: "Requests / sec", value: kpis.req_per_sec, accent: "#16B981" },
+        {
+          label: "Critical Alerts",
+          value: kpis.critical_devices,
+          accent: kpis.critical_devices > 0 ? "#EF4444" : "#16B981",
+        },
+      ].map((c) => (
+        <motion.div key={c.label} variants={item}>
+          <Card label={c.label} value={c.value} suffix={c.suffix} decimals={c.decimals} accent={c.accent} />
+        </motion.div>
+      ))}
+    </motion.div>
   );
 }

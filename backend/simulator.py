@@ -47,6 +47,10 @@ class Device:
     latency: float = 20.0
     vibration: float = 0.2
     status: str = "normal"  # normal | warning | critical
+    cpu_baseline: float = 40.0
+    temp_baseline: float = 45.0
+    latency_baseline: float = 20.0
+    spike_ticks_left: int = 0
 
 
 def _rand_coord():
@@ -77,11 +81,20 @@ class Simulator:
             )
             self.factories.append(f)
             for d in range(devices_per_factory):
+                cpu_base = random.uniform(28, 52)
+                temp_base = random.uniform(38, 55)
+                lat_base = random.uniform(12, 35)
                 self.devices.append(
                     Device(
                         id=str(uuid.uuid4())[:8],
                         factory_id=f.id,
                         kind=random.choice(kinds),
+                        cpu=cpu_base,
+                        temp=temp_base,
+                        latency=lat_base,
+                        cpu_baseline=cpu_base,
+                        temp_baseline=temp_base,
+                        latency_baseline=lat_base,
                     )
                 )
 
@@ -95,16 +108,30 @@ class Simulator:
         self.tick_count += 1
         now = time.time()
 
-        # --- devices drift with occasional spikes ---
+        # --- devices drift with mean reversion, occasional self-healing spikes ---
         for d in self.devices:
-            drift = random.uniform(-2.5, 2.6)
-            d.cpu = min(100, max(2, d.cpu + drift))
-            d.temp = min(120, max(15, d.temp + random.uniform(-1.2, 1.3)))
-            d.latency = max(1, d.latency + random.uniform(-3, 3.2))
-            d.vibration = max(0, d.vibration + random.uniform(-0.05, 0.06))
+            # gently pull each metric back toward its own baseline so the
+            # fleet oscillates around a steady state instead of random-
+            # walking to 100% and staying there forever
+            reversion = 0.06
+            d.cpu += reversion * (d.cpu_baseline - d.cpu) + random.uniform(-1.6, 1.6)
+            d.temp += reversion * (d.temp_baseline - d.temp) + random.uniform(-0.8, 0.8)
+            d.latency += reversion * (d.latency_baseline - d.latency) + random.uniform(-2, 2)
+            d.vibration += 0.1 * (0.2 - d.vibration) + random.uniform(-0.03, 0.03)
 
-            if random.random() < 0.004:  # rare spike event
-                d.cpu = min(100, d.cpu + random.uniform(20, 40))
+            # rare spike event -- decays back down automatically over the
+            # following ticks rather than requiring an external reset
+            if d.spike_ticks_left > 0:
+                d.spike_ticks_left -= 1
+            elif random.random() < 0.0015:
+                d.spike_ticks_left = random.randint(4, 10)
+                d.cpu = min(100, d.cpu + random.uniform(25, 45))
+                d.temp = min(120, d.temp + random.uniform(10, 25))
+
+            d.cpu = min(100, max(2, d.cpu))
+            d.temp = min(120, max(15, d.temp))
+            d.latency = max(1, d.latency)
+            d.vibration = max(0, d.vibration)
 
             if d.cpu > 90 or d.temp > 95:
                 d.status = "critical"
@@ -123,9 +150,11 @@ class Simulator:
 
         # --- digital twin rooms ---
         for r in self.rooms:
-            r["value"] = min(100, max(5, r["value"] + random.uniform(-4, 4.5)))
-            if random.random() < 0.01:
+            baseline = r.setdefault("baseline", 40.0)
+            r["value"] += 0.08 * (baseline - r["value"]) + random.uniform(-3.5, 3.5)
+            if random.random() < 0.006:
                 r["value"] = min(100, r["value"] + random.uniform(15, 30))
+            r["value"] = min(100, max(5, r["value"]))
             r["status"] = (
                 "critical" if r["value"] > 88 else "warning" if r["value"] > 68 else "normal"
             )
