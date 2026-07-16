@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Snapshot, Insight, StreamMessage } from "../types";
 
-const WS_URL = `${location.protocol === "https:" ? "wss" : "ws"}://${location.hostname}:8000/ws/stream`;
-const API_BASE = `${location.protocol}//${location.hostname}:8000`;
+const API_BASE = "https://pulsex-s3z2.onrender.com";
+const WS_URL = "wss://pulsex-s3z2.onrender.com/ws/stream";
 
 export function usePulseStream() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
